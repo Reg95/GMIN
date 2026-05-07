@@ -1,0 +1,80 @@
+name: test_RFDN_x4
+suffix: ~  # add suffix to saved images
+model_type: SRModel
+scale: 4
+crop_border: ~  # crop border when evaluation. If None, crop the scale pixels
+num_gpu: 1  # set num_gpu: 0 for cpu mode
+manual_seed: 0
+
+datasets:
+  test_1: # the 1st test dataset
+    name: Set5
+    type: PairedImageDataset
+    dataroot_gt: N:\Dataset\test\Set5\x4\HR
+    dataroot_lq: N:\Dataset\test\Set5\x4\LR
+    io_backend:
+      type: disk
+#  test_2: # the 2st test dataset
+#    name: Set14
+#    type: PairedImageDataset
+#    dataroot_gt: ./datasets/Set14/GTmod4
+#    dataroot_lq: ./datasets/Set14/LRbicx4
+#    io_backend:
+#      type: disk
+#
+#  test_3:
+#    name: BSD100
+#    type: PairedImageDataset
+#    dataroot_gt: ./datasets/BSD100/GTmod4
+#    dataroot_lq: ./datasets/BSD100/LRbicx4
+#    io_backend:
+#      type: disk
+#
+#  test_4:
+#    name: Urban100
+#    type: PairedImageDataset
+#    dataroot_gt: ./datasets/Urban100/GTmod4
+#    dataroot_lq: ./datasets/Urban100/LRbicx4
+#    io_backend:
+#      type: disk
+#
+#  test_5:
+#    name: Manga109
+#    type: PairedImageDataset
+#    dataroot_gt: ./datasets/Manga109/GTmod4
+#    dataroot_lq: ./datasets/Manga109/LRbicx4
+#    io_backend:
+#      type: disk
+
+
+# network structures
+network_g:
+  type: RFDN
+  in_nc: 3
+  out_nc: 3
+  nf: 50
+  num_modules: 4
+  upscale: 4
+#  res_scale: 0.1
+#  img_range: 255.
+#  rgb_mean: [0.4488, 0.4371, 0.4040]
+
+# path
+path:
+  pretrain_network_g:  N:\code\BSRN-main\experiments\pretrained_models\RFDN_AIM.pth
+  strict_load_g: true
+
+# validation settings
+val:
+  save_img: true
+  suffix: ~  # add suffix to saved images, if None, use exp name
+  pbar: true
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 4
+      test_y_channel: true
+    ssim:
+      type: calculate_ssim
+      crop_border: 4
+      test_y_channel: true

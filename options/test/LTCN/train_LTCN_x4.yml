@@ -1,0 +1,68 @@
+name: LTCN_SR_x2_v1
+model_type: SRModel
+scale: 4 # 2/3/4/8
+num_gpu: 1 # or 4
+manual_seed: 10
+
+datasets:
+  val_1:
+    name: Set5
+    type: PairedImageDataset
+    dataroot_gt: E:\Dataset\test\Set5\HR
+    dataroot_lq: E:\Dataset\test\Set5\LR_bicubic\X4
+    filename_tmpl: '{}x4'
+    io_backend:
+      type: disk
+
+  # val_2:
+  #   name: Set14
+  #   type: PairedImageDataset
+  #   dataroot_gt: ./datasets/Set14/GTmod2
+  #   dataroot_lq: ./datasets/Set14/LRbicx2
+  #   io_backend:
+  #     type: disk
+
+  # val_3:
+  #   name: Urban100
+  #   type: PairedImageDataset
+  #   dataroot_gt: ./datasets/urban100/GTmod2
+  #   dataroot_lq: ./datasets/urban100/LRbicx2
+  #   io_backend:
+  #     type: disk
+
+
+# network structures
+network_g:
+  type: LTCN
+  scale: 4 #or 3/4
+  int_channels: 3
+  out_channels: 3
+  n_resblocks: 8 # 5 for MAN-tiny; 24 for MAN-light; 36 for MAN
+  n_resgroups: 1
+  n_feats: 50 # 48 for MAN-tiny; 60 for MAN-light; 180 for MAN
+  ffn_expansion_factor: 2.66
+
+
+# path
+path:
+  pretrain_network_g: ~
+  strict_load_g: true
+  resume_state: ~
+
+# validation settings
+val:
+  val_freq: !!float 5e3
+  save_img: true
+  pbar: False
+
+  metrics:
+    psnr:
+      type: calculate_psnr
+      crop_border: 4 # 2/3/4
+      test_y_channel: true
+      better: higher  # the higher, the better. Default: higher
+    ssim:
+      type: calculate_ssim
+      crop_border: 4 # 2/3/4
+      test_y_channel: true
+      better: higher  # the higher, the better. Default: higher

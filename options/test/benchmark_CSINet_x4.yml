@@ -1,0 +1,94 @@
+name: test_CSINet_x3_ema_C56_fine_tune_dw+pw1_v2
+suffix: ~  # add suffix to saved images
+model_type: SRModel
+scale: 3  ####2,3,4
+crop_border: ~  # crop border when evaluation. If None, crop the scale pixels
+num_gpu: 1  # set num_gpu: 0 for cpu mode
+manual_seed: 100
+
+datasets:
+  test_1: # the 1st test dataset
+    name: Set5
+    type: PairedImageDataset
+    dataroot_gt: D:\Dataset\test\Set5\HR
+    dataroot_lq: D:\Dataset\test\Set5\LR_bicubic\X3
+    filename_tmpl: '{}x3'
+    io_backend:
+      type: disk
+  test_2: # the 2st test dataset
+    name: Set14
+    type: PairedImageDataset
+    dataroot_gt: D:\Dataset\test\Set14\HR
+    dataroot_lq: D:\Dataset\test\Set14\LR_bicubic\X3
+    filename_tmpl: '{}x3'
+    io_backend:
+      type: disk
+
+  test_3:
+    name: BSD100
+    type: PairedImageDataset
+    dataroot_gt: D:\Dataset\test\B100\HR
+    dataroot_lq: D:\Dataset\test\B100\LR_bicubic\X3
+    filename_tmpl: '{}x3'
+    io_backend:
+      type: disk
+
+  test_4:
+    name: Urban100
+    type: PairedImageDataset
+    dataroot_gt: D:\Dataset\test\Urban100\HR
+    dataroot_lq: D:\Dataset\test\Urban100\LR_bicubic\X3
+    filename_tmpl: '{}x3'
+    io_backend:
+      type: disk
+
+  test_5:
+    name: Manga109
+    type: PairedImageDataset
+    dataroot_gt: D:\Dataset\test\Manga109\HR
+    dataroot_lq: D:\Dataset\test\Manga109\LR_bicubic\X3
+    filename_tmpl: '{}x3'
+    io_backend:
+      type: disk
+#  test_6:
+#    name: RealSRSet
+#    type: PairedImageDataset
+#    dataroot_gt: D:\Dataset\test\RealSRSet\HR
+#    dataroot_lq: D:\Dataset\test\RealSRSet\LR
+#    io_backend:
+#      type: disk
+# network structure
+
+ema_decay: 0.999
+network_g:
+  type: CSINet
+  num_in_ch: 3
+  num_feat: 56
+  num_block: 4
+  num_out_ch: 3
+  upscale: 3 ####2,3,4
+  # change_c: 15
+
+# path
+path:
+  pretrain_network_g: C:\code\BSRN-main\experiments\CSINets_C56_adam_ema_x3_fine_tune_20kv2\models\net_g_5000.pth  #3 experiments/pretrained_models/CSINet_x2_95000.pth
+  param_key_g: params_ema
+#  pretrain_network_g:   D:\code\BSRN-main\experiments\pretrained_models\net_g_5000.pth   #3 net_g_830000.pth
+#  pretrain_network_g:  D:\code\BSRN-main\experiments\pretrained_models\net_g_845000.pth  #2
+#  pretrain_network_g:  D:\code\BSRN-main\experiments\pretrained_models\net_g_695000.pth  #4
+  strict_load_g: false
+
+# validation settings
+val:
+  save_img: false
+  suffix: ~  # add suffix to saved images, if None, use exp name
+  pbar: true
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 3
+      test_y_channel: true
+    ssim:
+      type: calculate_ssim
+      crop_border: 3
+      test_y_channel: true

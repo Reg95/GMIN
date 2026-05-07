@@ -1,0 +1,88 @@
+name: test_TSSAFormer_x4_no_mask_net_g_955000
+suffix: ~  # add suffix to saved images
+model_type: SRModel
+scale: 4
+crop_border: ~  # crop border when evaluation. If None, crop the scale pixels
+num_gpu: 1  # set num_gpu: 0 for cpu mode
+manual_seed: 100
+
+datasets:
+  test_1: # the 1st test dataset
+    name: Set5
+    type: PairedImageDataset
+    dataroot_gt: /mnt/d/Dataset/test/Set5/HR
+    dataroot_lq: /mnt/d/Dataset/test/Set5/LR_bicubic/X4
+    filename_tmpl: '{}x4'
+    io_backend:
+      type: disk
+  test_2: # the 2st test dataset
+    name: Set14
+    type: PairedImageDataset
+    dataroot_gt: /mnt/d/Dataset/test/Set14/HR
+    dataroot_lq: /mnt/d/Dataset/test/Set14/LR_bicubic/X4
+    filename_tmpl: '{}x4'
+    io_backend:
+      type: disk
+
+  test_3:
+    name: BSD100
+    type: PairedImageDataset
+    dataroot_gt: /mnt/c/Dataset/test/BSDS100/x4/HR
+    dataroot_lq: /mnt/c/Dataset/test/BSDS100/x4/LR
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+#  test_4:
+#    name: Urban100
+#    type: PairedImageDataset
+#    dataroot_gt: /mnt/d/Dataset/test/Urban100/HR
+#    dataroot_lq: /mnt/d/Dataset/test/Urban100/LR_bicubic/X4
+#    filename_tmpl: '{}x4'
+#    io_backend:
+#      type: disk
+
+  test_5:
+    name: Manga109
+    type: PairedImageDataset
+    dataroot_gt: /mnt/c/Dataset/test/Manga109/HR
+    dataroot_lq: /mnt/c/Dataset/test/Manga109/LR_bicubic/X4
+    filename_tmpl: '{}x4'
+    io_backend:
+      type: disk
+
+
+# network structures
+network_g:
+  type: TSSAFormer
+#  num_in_ch: 3
+#  num_feat: 56
+#  num_blocks: 4
+#  num_out_ch: 3
+  upscale: 4
+
+# path
+path:
+  pretrain_network_g: /mnt/c/code/BSRN-main/experiments/tssaformer_x4_lightFeed_Silu_dw3,3/models/net_g_955000.pth
+  #C:\code\BSRN-main\experiments\GMIN_C56_adan_ema_x4_DF2K_fine_tune_10k\models\net_g_5000.pth #305000
+  param_key_g: params_ema
+  # D:\code\BSRN-main\experiments\MAGN_C56_adan_ema_x2_DF2K_fine_tune_10k\models\net_g_160000.pth
+  #D:\code\BSRN-main\experiments\MAGN_C56_adan_ema_x2_DF2K_fine_tune_10k\models\net_g_275000.pth
+
+  #net_g_165000.pth,net_g_190000.pth,net_g_220000.pth,net_g_265000.pth #net_g_275000.pth
+  strict_load_g: false
+
+# validation settings
+val:
+  save_img: true
+  suffix: x4  # add suffix to saved images, if None, use exp name
+  pbar: true
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 4
+      test_y_channel: true
+    ssim:
+      type: calculate_ssim
+      crop_border: 4
+      test_y_channel: true

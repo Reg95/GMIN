@@ -1,0 +1,62 @@
+name: visual_deblur
+model_type: SRModel
+scale: 1 # 2/3/4/8
+num_gpu: 1 # or 4
+manual_seed: 2
+
+datasets:
+#  test_1: # the 1st test dataset
+#    name: GoPro_subTest
+#    type: PairedImageDataset
+#    dataroot_lq: D:\code\Restormer-main\Motion_Deblurring\Datasets\test\GoPro\input
+#    dataroot_gt: D:\code\Restormer-main\Motion_Deblurring\Datasets\test\GoPro\target
+#    io_backend:
+#      type: disk
+#  test_2:  # the 1st test dataset
+#    name: GoPro_subTest
+#    type: PairedImagePathTextDataset
+#    lq_file: D:\\file\\GOPRO\\test_blur_file_very_tiny.txt
+#    gt_file: D:\\file\\GOPRO\\test_sharp_file_very_tiny.txt
+#    dataroot: D:\\file\\GOPRO
+#    io_backend:
+#      type: disk
+
+  test_2:  # the 1st test dataset
+    name: HIDE_subTest
+    type: PairedImageDataset
+    dataroot_lq: C:\Dataset\visual
+    dataroot_gt: C:\Dataset\visual
+    io_backend:
+      type: disk
+
+
+
+# network structures
+network_g:
+  type: GLSKN_2
+
+
+# path
+path:
+  pretrain_network_g: C:\code\BSRN-main\experiments\Debluring_GMIM_g128_y_40_v1\models\net_g_965000.pth
+  #C:\code\BSRN-main\experiments\Deblur_GLSKN_G128_MBV11\models\net_g_985000.pth
+  strict_load_g: true
+
+
+# validation settings
+val:
+  save_img: true
+  suffix: ~  # add suffix to saved images, if None, use exp name
+  pbar: true
+
+  metrics:
+    psnr:
+      type: calculate_psnr
+      crop_border: 0  # 2/3/4
+      test_y_channel: true
+      better: higher  # the higher, the better. Default: higher
+    ssim:
+      type: calculate_ssim
+      crop_border: 0 # 2/3/4
+      test_y_channel: true
+      better: higher  # the higher, the better. Default: higher
